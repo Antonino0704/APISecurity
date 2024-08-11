@@ -25,6 +25,16 @@ public class Privilege {
       inverseJoinColumns = @JoinColumn(name = "email"))
   private List<User> users;
 
+  public Privilege(int code, String privilege) {
+    super();
+    this.code = code;
+    this.privilege = privilege;
+  }
+
+  public Privilege() {
+    super();
+  }
+
   public int getCode() {
     return code;
   }

@@ -22,6 +22,17 @@ public class User {
   @OneToOne(mappedBy = "user")
   private UserAuthentication userAuth;
 
+  public User(String email, String firstName, String lastName) {
+    super();
+    this.email = email;
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  public User() {
+    super();
+  }
+
   public String getEmail() {
     return email;
   }

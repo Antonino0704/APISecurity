@@ -17,6 +17,16 @@ public class UserAuthentication {
   @JoinColumn(name = "email", referencedColumnName = "email")
   private User user;
 
+  public UserAuthentication(String email, String password) {
+    super();
+    this.email = email;
+    this.password = password;
+  }
+
+  public UserAuthentication() {
+    super();
+  }
+
   public String getEmail() {
     return email;
   }
