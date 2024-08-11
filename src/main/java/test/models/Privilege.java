@@ -21,7 +21,7 @@ public class Privilege {
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
-      joinColumns = @JoinColumn(name = "privilegeCode"),
+      joinColumns = @JoinColumn(name = "privilegeCode", unique = true),
       inverseJoinColumns = @JoinColumn(name = "email"))
   private List<User> users;
 
