@@ -1,9 +1,7 @@
 package test.apis;
 
 import apisecurity.services.JWTService;
-import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -21,27 +19,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import test.models.Privilege;
 import test.models.User;
-import test.models.UserAuthentication;
+import test.repositories.PrivilegeRepository;
+import test.repositories.UserRepository;
 import test.services.UserService;
 
 @RestController
-@RequestMapping("/apiV0/user")
+@RequestMapping("/user")
 public class UserController {
   @Autowired private UserService userService;
   @Autowired private JWTService jwtService;
-
-  @PostMapping("/login")
-  public ResponseEntity<?> login(@RequestBody UserAuthentication userAuth) {
-    Map<String, String> map = new HashMap<>();
-    try {
-      User user = userService.login(userAuth);
-      map.put("token", jwtService.generateToken(user));
-      return new ResponseEntity<>(map, HttpStatus.OK);
-    } catch (Exception e) {
-      map.put("error", "user not found");
-      return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
-    }
-  }
+  @Autowired private UserRepository userRepo;
+  @Autowired private PrivilegeRepository privilegeRepo;
 
   @GetMapping("/{email}")
   public ResponseEntity<?> getUser(@PathVariable String email) {
@@ -54,39 +42,19 @@ public class UserController {
     }
   }
 
-  @PostMapping("/add")
-  public ResponseEntity<?> addUser(@RequestBody ObjectNode objectNode) {
-    try {
-      userService.addUserService(
-          new User(
-              objectNode.get("email").asText(),
-              objectNode.get("firstName").asText(),
-              objectNode.get("lastName").asText()),
-          new UserAuthentication(
-              objectNode.get("email").asText(), objectNode.get("password").asText()));
-      return new ResponseEntity<>(HttpStatus.OK);
-    } catch (Exception e) {
-      System.out.println(e);
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-  }
-
   @PutMapping("/edit/{email}")
   public ResponseEntity<?> editUserFirstName(
       @RequestHeader("Authorization") String bearerToken,
       @RequestBody User user,
       @PathVariable String email) {
     try {
-      jwtService.verifyJWT(bearerToken, new Privilege(1, "employee"));
+      jwtService.verifyJWT(bearerToken, userRepo.findById(email).get());
       user.setEmail(email);
       userService.editUserFirstName(user);
       return new ResponseEntity<>(HttpStatus.OK);
     } catch (NoSuchElementException e) {
       System.out.println(e);
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    } catch (JWTDecodeException e) {
-      System.out.println(e);
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } catch (JWTVerificationException e) {
       System.out.println(e);
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -99,7 +67,7 @@ public class UserController {
       @RequestBody Privilege privilege,
       @PathVariable String email) {
     try {
-      jwtService.verifyJWT(bearerToken, new Privilege(4, "CEO"));
+      jwtService.verifyJWT(bearerToken, privilegeRepo.findByPrivilege("CEO"));
       userService.addPrivilege(email, privilege);
       return new ResponseEntity<>(HttpStatus.OK);
     } catch (NullPointerException e) {
@@ -108,12 +76,12 @@ public class UserController {
     } catch (DataIntegrityViolationException e) {
       System.out.println(e);
       return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-    } catch (JWTDecodeException e) {
-      System.out.println(e);
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     } catch (JWTVerificationException e) {
       System.out.println(e);
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    } catch (NoSuchElementException e) {
+      System.out.println(e);
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
   }
 }

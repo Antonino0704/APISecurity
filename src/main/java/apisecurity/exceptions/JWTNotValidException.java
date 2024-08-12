@@ -1,7 +1,7 @@
 package apisecurity.exceptions;
 
 public class JWTNotValidException extends Exception {
-  public JWTNotValidException(String privilege) {
-    super("you don't have permissions, requied:" + privilege);
+  public JWTNotValidException(String requirement) {
+    super("you don't have permissions, requied:" + requirement);
   }
 }

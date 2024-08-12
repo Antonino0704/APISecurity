@@ -22,8 +22,10 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Date;
+import org.springframework.beans.factory.annotation.Autowired;
 import test.models.Privilege;
 import test.models.User;
+import test.repositories.UserRepository;
 
 public class JWTService implements RSAKeyProvider {
   private KeyPairGenerator kpg;
@@ -32,8 +34,14 @@ public class JWTService implements RSAKeyProvider {
 
   private final String PATH = System.getProperty("user.dir") + "/src/main/resources";
 
+  @Autowired private UserRepository userRepo;
+
   public JWTService() {
     super();
+    this.checkKeys();
+  }
+
+  public void checkKeys() {
     if (!new File(PATH + "/private.key").isFile() || !new File(PATH + "/public.key").isFile()) {
       try {
         kpg = KeyPairGenerator.getInstance("RSA");
@@ -44,7 +52,7 @@ public class JWTService implements RSAKeyProvider {
       } catch (NoSuchAlgorithmException e) {
         e.printStackTrace();
       }
-    } else System.out.println("keys already exists");
+    } else System.out.println("the keys already exists");
   }
 
   public String generateToken(User user) {
@@ -62,10 +70,26 @@ public class JWTService implements RSAKeyProvider {
     algorithm = Algorithm.RSA256(this.getPublicKey(), this.getPrivateKey());
     token = token.replace("Bearer ", "");
     JWTVerifier verifier = JWT.require(algorithm).withIssuer("auth0").build();
+    decodedJWT = verifier.verify(token);
+
+    if (!userRepo
+        .findById(decodedJWT.getClaim("email").asString())
+        .get()
+        .getPrivileges()
+        .contains(privilege)) {
+      throw new JWTVerificationException(privilege.getPrivilege());
+    }
+  }
+
+  public void verifyJWT(String token, User user) {
+    DecodedJWT decodedJWT = null;
+    algorithm = Algorithm.RSA256(this.getPublicKey(), this.getPrivateKey());
+    token = token.replace("Bearer ", "");
+    JWTVerifier verifier = JWT.require(algorithm).withIssuer("auth0").build();
 
     decodedJWT = verifier.verify(token);
-    if (!(decodedJWT.getClaim("privilege").asInt() >= privilege.getCode())) {
-      throw new JWTVerificationException(privilege.getPrivilege());
+    if (!decodedJWT.getClaim("email").asString().equals(user.getEmail())) {
+      throw new JWTVerificationException(user.getEmail());
     }
   }
 
@@ -137,6 +161,8 @@ public class JWTService implements RSAKeyProvider {
       privateKey = keyFactory.generatePrivate(privateKeySpec);
     } catch (InvalidKeySpecException | IOException | NoSuchAlgorithmException e) {
       e.printStackTrace();
+      this.checkKeys();
+      return this.LoadKeyPair();
     }
 
     return new KeyPair(publicKey, privateKey);

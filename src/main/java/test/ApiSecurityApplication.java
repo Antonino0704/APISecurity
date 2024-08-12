@@ -5,6 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+import test.services.AuthService;
 import test.services.PrivilegeService;
 import test.services.UserService;
 
@@ -29,5 +31,10 @@ public class ApiSecurityApplication {
   @Bean
   public PrivilegeService getPrivilegeService() {
     return new PrivilegeService();
+  }
+
+  @Bean
+  public AuthService getAuthService() {
+    return new AuthService();
   }
 }
