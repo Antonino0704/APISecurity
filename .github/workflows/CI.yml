@@ -1,0 +1,12 @@
+name: Check
+on: [pull_request]
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: axel-op/googlejavaformat-action@v3
+        with:
+           args: "--skip-reflowing-long-strings --skip-javadoc-formatting --set-exit-if-changed" 
+           version: v1.23.0 
