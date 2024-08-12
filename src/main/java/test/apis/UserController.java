@@ -24,7 +24,7 @@ import test.repositories.UserRepository;
 import test.services.UserService;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/apiV0/user")
 public class UserController {
   @Autowired private UserService userService;
   @Autowired private JWTService jwtService;

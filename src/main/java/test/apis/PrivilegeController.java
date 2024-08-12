@@ -19,7 +19,7 @@ import test.repositories.PrivilegeRepository;
 import test.services.PrivilegeService;
 
 @RestController
-@RequestMapping("/privilege")
+@RequestMapping("/apiV0/privilege")
 public class PrivilegeController {
   @Autowired PrivilegeService privilegeService;
   @Autowired private JWTService jwtService;
