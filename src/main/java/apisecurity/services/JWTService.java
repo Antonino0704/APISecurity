@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,26 +24,37 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
 import test.models.Privilege;
 import test.models.User;
 import test.repositories.UserRepository;
 
+@Controller
 public class JWTService implements RSAKeyProvider {
+  @Value("${dev}")
+  private boolean devMode;
+
   private KeyPairGenerator kpg;
   private KeyPair kp;
   private Algorithm algorithm;
-
-  private final String PATH = System.getProperty("user.dir") + "/src/main/resources";
+  private String PATH;
 
   @Autowired private UserRepository userRepo;
 
   public JWTService() {
     super();
+    this.pathBuild();
+  }
+
+  @PostConstruct
+  private void pathBuild() {
+    PATH = devMode ? System.getProperty("user.dir") + "/src/main/resources/" : "";
     this.checkKeys();
   }
 
   public void checkKeys() {
-    if (!new File(PATH + "/private.key").isFile() || !new File(PATH + "/public.key").isFile()) {
+    if (!new File(PATH + "private.key").isFile() || !new File(PATH + "public.key").isFile()) {
       try {
         kpg = KeyPairGenerator.getInstance("RSA");
         kpg.initialize(2048);
@@ -117,14 +129,14 @@ public class JWTService implements RSAKeyProvider {
 
       // Store Public Key.
       X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(kp.getPublic().getEncoded());
-      FileOutputStream fos = new FileOutputStream(PATH + "/public.key");
+      FileOutputStream fos = new FileOutputStream(PATH + "public.key");
       fos.write(x509EncodedKeySpec.getEncoded());
       fos.close();
 
       // Store Private Key.
       PKCS8EncodedKeySpec pkcs8EncodedKeySpec =
           new PKCS8EncodedKeySpec(kp.getPrivate().getEncoded());
-      fos = new FileOutputStream(PATH + "/private.key");
+      fos = new FileOutputStream(PATH + "private.key");
       fos.write(pkcs8EncodedKeySpec.getEncoded());
       fos.close();
     } catch (IOException e) {
@@ -138,15 +150,15 @@ public class JWTService implements RSAKeyProvider {
 
     try {
       // Read Public Key.
-      File filePublicKey = new File(PATH + "/public.key");
-      FileInputStream fis = new FileInputStream(PATH + "/public.key");
+      File filePublicKey = new File(PATH + "public.key");
+      FileInputStream fis = new FileInputStream(PATH + "public.key");
       byte[] encodedPublicKey = new byte[(int) filePublicKey.length()];
       fis.read(encodedPublicKey);
       fis.close();
 
       // Read Private Key.
-      File filePrivateKey = new File(PATH + "/private.key");
-      fis = new FileInputStream(PATH + "/private.key");
+      File filePrivateKey = new File(PATH + "private.key");
+      fis = new FileInputStream(PATH + "private.key");
       byte[] encodedPrivateKey = new byte[(int) filePrivateKey.length()];
       fis.read(encodedPrivateKey);
       fis.close();
