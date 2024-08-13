@@ -25,12 +25,10 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import test.models.Privilege;
 import test.models.User;
 import test.repositories.UserRepository;
 
-@Controller
 public class JWTService implements RSAKeyProvider {
   @Value("${dev}")
   private boolean devMode;
