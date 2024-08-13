@@ -30,7 +30,6 @@ import test.models.Privilege;
 import test.models.User;
 import test.repositories.UserRepository;
 
-@Controller
 public class JWTService implements RSAKeyProvider {
   @Value("${dev}")
   private boolean devMode;
