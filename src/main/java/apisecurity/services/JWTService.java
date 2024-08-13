@@ -44,7 +44,6 @@ public class JWTService implements RSAKeyProvider {
 
   public JWTService() {
     super();
-    this.pathBuild();
   }
 
   @PostConstruct
