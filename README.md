@@ -22,7 +22,7 @@ For maven, you can run mvnw.cmd or use your maven installed/maven integrated wit
     ```
     spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
     spring.datasource.username=YourDBUser
-    spring.datasource.password=YourPasswdUser
+    spring.datasource.password=YourUserPassword
     spring.datasource.url=jdbc:mariadb://localhost:3306/YuorDBName
     dev=false
     ```
