@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
 import test.models.Privilege;
 import test.models.User;
 import test.models.UserAuthentication;
@@ -11,6 +12,7 @@ import test.repositories.PrivilegeRepository;
 import test.repositories.UserAuthenticationRepository;
 import test.repositories.UserRepository;
 
+@Service
 public class AuthService {
   @Autowired private UserRepository userRepo;
   @Autowired private UserAuthenticationRepository userAuthRepo;

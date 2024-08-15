@@ -3,11 +3,13 @@ package test.services;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
 import test.models.Privilege;
 import test.models.User;
 import test.repositories.PrivilegeRepository;
 import test.repositories.UserRepository;
 
+@Service
 public class UserService {
   @Autowired private UserRepository userRepo;
   @Autowired private PrivilegeRepository privilegeRepo;
