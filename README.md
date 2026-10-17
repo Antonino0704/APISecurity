@@ -12,23 +12,14 @@ JWT stands for json web token and it is an authentication token. It's used to au
 - <img src="https://img.shields.io/badge/PostMan-(recommended)-gray?logo=postman&logoColor=white&labelColor=orange" alt="postman" />
 
 
-For maven, you can run mvnw.cmd or use your maven installed/maven integrated with your IDE
+For maven, you can run mvnw (mvnw.cmd for windows) or use your maven installed/maven integrated with your IDE
 
 # Setup
 - Fork and clone the repository
-- Create the ```resources``` folder in ```src/main/```
-- Create ```application.properties``` file into ```resources``` folder
-- Add the following properties:
-    ```
-    spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
-    spring.datasource.username=YourDBUser
-    spring.datasource.password=YourUserPassword
-    spring.datasource.url=jdbc:mariadb://localhost:3306/YuorDBName
-    dev=false
-    ```
+- Run SetUp.jar file ```yourJDKPath/bin/java -jar  SetUp.jar```
 
 # Build
-Run mvnw.cmd (or your maven installed/maven integrated with your IDE) 
+Run mvnw (mvnw.cmd for windows, or your maven installed/maven integrated with your IDE) 
 
 ```mvnw package```
 
@@ -41,16 +32,18 @@ You can use postman to make requests to the server
 
 Endpoints are:
 ```
-/apiV0/auth/login
-/apiV0/auth/registration
+/api/v1/auth/login
+/api/V1/auth/registration
 
-/apiV0/user/{email}
-/apiV0/user/edit/{email}
-/apiV0/user/{email}/privilege
+/api/V1//user/{email}
+/api/V1/user/edit/{email}
+/api/V1/user/{email}/privilege
 
-/apiV0/privilege/
+/api/V1/privilege/
 ```
 We create the following roles in DB: employee, admin, manager, CEO. The highest role has the highest id, every user who has a certain role will in turn have all the roles lower than their.
+> [!warning]
+> Examples in this documentation may reference the deprecated apiV0/ endpoints. Use api/v1/ for all current integrations.
 
 First request, let's register (we'll get 200 ok or 400 bad request)
 >![image](https://github.com/user-attachments/assets/a9359cf0-90e4-45e2-9c7b-75b29a93d7fb)

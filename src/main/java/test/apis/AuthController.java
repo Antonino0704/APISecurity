@@ -17,7 +17,7 @@ import test.models.UserAuthentication;
 import test.services.AuthService;
 
 @RestController
-@RequestMapping("/apiV0/auth")
+@RequestMapping("${apiPrefix}/auth")
 public class AuthController {
   @Autowired private AuthService authService;
   @Autowired private JWTService jwtService;
