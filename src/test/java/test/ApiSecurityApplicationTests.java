@@ -8,5 +8,4 @@ class ApiSecurityApplicationTests {
 
   @Test
   void contextLoads() {}
-
 }
