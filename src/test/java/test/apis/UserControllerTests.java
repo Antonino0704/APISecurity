@@ -3,6 +3,7 @@ package test.apis;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 
 import apisecurity.services.JWTService;
+import test.models.Privilege;
 import test.models.User;
 import test.repositories.PrivilegeRepository;
 import test.repositories.UserRepository;
@@ -91,7 +93,7 @@ public class UserControllerTests {
 	  
 	  when(userRepo.findById(email)).thenReturn(Optional.of(user));
 	  
-	  doThrow(new JWTVerificationException("Token non valido"))
+	  doThrow(new JWTVerificationException("Token not valid"))
       .when(jwtService)
       .verifyJWT("Bearer " + token, user);
 	  
@@ -114,4 +116,47 @@ public class UserControllerTests {
       .andExpect(jsonPath("$.user").value("John Safeman"));
 	  
   }
+  
+  @Test
+  public void addPrivilegeJWTValid() throws Exception {
+	  String email = "john.Safeman@myemail.com";
+	  
+	  mockMvc
+      .perform(post(apiPrefix + "/user/" +  email + "/privilege")
+    		  .header("Authorization", "Bearer fake token valid")
+    		  .contentType(MediaType.APPLICATION_JSON)
+    		  .content("""
+    		  		{
+    		  			"privilege": "Test privilege"
+    		  		}
+    		  		""")
+    		  )
+      .andExpect(status().isOk());
+	  
+  }
+  @Test
+  public void addPrivilegeJWTNotValid() throws Exception {
+	  String email = "john.Safeman@myemail.com";
+	  Privilege privilege = new Privilege(1, "CEO");
+	  
+	  when(privilegeRepo.findByPrivilege("CEO")).thenReturn(privilege);
+	  
+	  doThrow(new JWTVerificationException("Token not valid"))
+		.when(jwtService)
+		.verifyJWT("Bearer fake not token valid", privilege);
+	  
+	  mockMvc
+      .perform(post(apiPrefix + "/user/" +  email + "/privilege")
+    		  .header("Authorization", "Bearer fake not token valid")
+    		  .contentType(MediaType.APPLICATION_JSON)
+    		  .content("""
+    		  		{
+    		  			"privilege": "Test privilege"
+    		  		}
+    		  		""")
+    		  )
+      .andExpect(status().isForbidden());
+  }
 }
+
+

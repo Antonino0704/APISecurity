@@ -16,7 +16,7 @@ import test.models.Privilege;
 import test.models.User;
 
 @SpringBootTest
-public class JWTServiceTest {
+public class JWTServiceTests {
 
   @Autowired private JWTService jwtService;
 
